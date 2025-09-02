@@ -59,7 +59,7 @@ mlb_teams = {
 
 # Load and preprocess data
 data = pd.read_csv('stats.csv')
-data = data[data['Date'].str.contains('2024', na=False)]
+data = data[data['Date'].str.contains('2025', na=False)]
 data = data.reset_index().drop(['index'], axis=1)
 data = data.loc[:, ~data.columns.str.contains('^Unnamed')]
 data['Date'] = pd.to_datetime(data['Date'], format='%Y-%m-%d')
@@ -75,7 +75,7 @@ def calculate_moving_averages(stats, team):
     Generates exponential moving averages for each column in the dataset for a specific team
 
     Inputs:
-    stats -- Statistics for the 2024 season
+    stats -- Statistics for the 2025 season
     team -- The desired team to generate rolling averages for
 
     Returns:
@@ -168,7 +168,7 @@ def dataset_maker(home, away, date, stats):
     home -- Home team of the game being predicted
     away -- Away team of the game being predicted
     date -- Date of the game
-    stats -- Statistics for the 2024 season
+    stats -- Statistics for the 2025 season
 
     Returns:
     home_offense -- Data entry for the home team being on offense
@@ -191,7 +191,6 @@ def dataset_maker(home, away, date, stats):
 
     return home_offense, away_offense
 
-#Load the models used to predict game outcomes
 with open('win_model.pkl', 'rb') as file:
     win_model = pickle.load(file)
 
@@ -246,7 +245,7 @@ def main():
             
     def find_date():
         month = input('Enter a month (1-12): ')
-        while month not in list(map(str, list(range(1,12)))):
+        while month not in list(map(str, list(range(1,13)))):
             print('Month must be between 1 and 12')
             month = input('Enter a month (1-12): ')
         
@@ -275,7 +274,7 @@ def main():
         if int(day) < 10:
             day = '0' + day
         
-        date = datetime.strptime(f'2024-{month}-{day}', '%Y-%m-%d')
+        date = datetime.strptime(f'2025-{month}-{day}', '%Y-%m-%d')
         if date < datetime.today():
             print('Cannot predict games in the past.')
             next = input('Press any key to try again, or hit q to quit: ')
@@ -306,7 +305,7 @@ def main():
     
     if num == '2':
         date = find_date()
-        team=statsapi.lookup_team(lookup_value=input('Enter a team name (home or away): '), season=2024)[0]['id']
+        team=statsapi.lookup_team(lookup_value=input('Enter a team name (home or away): '), season=2025)[0]['id']
         schedule = statsapi.schedule(date=date.date(), team=team)
         prediction(date=date, schedule=schedule)
         
@@ -318,8 +317,8 @@ def main():
             main()
 
     if num == '3':
-        team=statsapi.lookup_team(lookup_value=input('Enter a team name (home or away): '), season=2024)[0]['id']
-        schedule = statsapi.schedule(start_date=datetime.today().date(), end_date='2024-12-31', team=team)
+        team=statsapi.lookup_team(lookup_value=input('Enter a team name (home or away): '), season=2025)[0]['id']
+        schedule = statsapi.schedule(start_date=datetime.today().date(), end_date='2025-12-31', team=team)
 
         for game in schedule:
             prediction(date=datetime.strptime(game['game_date'], '%Y-%m-%d'), schedule=[game])
