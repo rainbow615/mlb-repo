@@ -114,7 +114,7 @@ def stats_per_year(year, years_completed):
     opening_day = datetime.strptime(pd.DataFrame(schedule)['game_date'][0], '%Y-%m-%d').date()
     dates = list(set(pd.DataFrame(schedule)['game_date']))
     dates.sort()
-    
+    print(f"dates: {dates}")
     for date in dates:
         #Resets stats dictionary before every iteration
         date = datetime.strptime(date, '%Y-%m-%d').date()
@@ -180,9 +180,11 @@ def stats_per_year(year, years_completed):
             hitURL = f'https://www.fangraphs.com/leaders/major-league?startdate={opening_day}&enddate={date}&ind=0&qual=0&pageitems=2000000000&season1=&season=&type=8&pos=all&stats=bat&team=0,ts&month=1000'
             hit_page = requests.get(hitURL)
             hit_soup = BeautifulSoup(hit_page.content, "html.parser")
+            print(f"hit_soup: {hit_soup}")
             hit_table = hit_soup.find('div', class_='table-scroll')
+            print(f"hit_table: {hit_table}")
             hit_rows = hit_table.find('tbody').find_all('tr')
-
+            print(f"hit_rows: {hit_rows}")
             #Pitching statistics for each team from opening day to date
             pitchURL = f'https://www.fangraphs.com/leaders/major-league?startdate={opening_day}&enddate={date}&ind=0&qual=0&pageitems=2000000000&season1=&season=&type=8&pos=all&stats=pit&team=0,ts&month=1000'
             pitch_page = requests.get(pitchURL)
@@ -569,8 +571,8 @@ def all_stats():
 
 def main():
     try:
-        #all_stats()
-        stats_per_year(2024, [])
+        all_stats()
+        #stats_per_year(2024, [])
     except Exception as e:
         print(f"Script crashed with error: {e}")
         print("Restarting script...")
