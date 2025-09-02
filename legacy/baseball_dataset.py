@@ -42,11 +42,6 @@ mlb_teams = {
     "Texas Rangers": {'abbr': 'TEX', 'team_num': 13},
     "Toronto Blue Jays": {'abbr': 'TOR', 'team_num': 14},
     "Washington Nationals": {'abbr': 'WSN', 'team_num': 24},
-    "Montreal Expos": {'abbr': 'MON', 'team_num': 24},
-    "Cleveland Indians": {'abbr': 'CLE', 'team_num': 5},
-    "Tampa Bay Devil Rays": {'abbr': 'TBD', 'team_num': 12},
-    "Anaheim Angels": {'abbr': 'ANA', 'team_num': 1},
-    "Florida Marlins": {'abbr': 'FLA', 'team_num': 20},
 }
 
 #Empty dictionary where statistics will be stored
@@ -177,7 +172,7 @@ def stats_per_year(year, years_completed):
                 'Runs Scored': [],
                 'Win?': [],
             }
-
+            print(f"----- Starting stats for {date} -----")
             #Initializes the daily schedule of games
             daily_schedule = [game for game in statsapi.schedule(date=date) if game['game_type'] == 'R']
 
@@ -551,10 +546,12 @@ def all_stats():
         years_completed = [2000, 2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013]
 
     #Iterates through each year from 2000 to 2024
-    for year in range(2013, 2026):
+    for year in range(2006, 2026):
         if year in years_completed:
             continue
+        print(f'Starting stats for {year}...')
         stats_per_year(year, years_completed)
+        print(f'Finished building stats for {year}.')
         years_completed.append(year)
         with open(years_file, 'w') as f:
             json.dump({'years_completed': years_completed}, f)
@@ -570,13 +567,17 @@ def all_stats():
 #all_stats()
 #pd.DataFrame(stats).to_csv('stats.csv')
 
-
-while True:
+def main():
     try:
-        all_stats()
+        #all_stats()
+        stats_per_year(2024, [])
     except Exception as e:
         print(f"Script crashed with error: {e}")
         print("Restarting script...")
         time.sleep(3)
+
+if __name__ == "__main__":
+    main()
+
 
 # stats_per_year(2024)
