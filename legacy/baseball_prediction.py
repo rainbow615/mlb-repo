@@ -178,7 +178,7 @@ def dataset_maker(home, away, date, stats):
     #Generates four datasets with their exponential moving averages included
     home_hitting, home_pitching = calculate_moving_averages(stats, home)
     away_hitting, away_pitching = calculate_moving_averages(stats, away)
-
+    print(f"Datasets generated{home_hitting, home_pitching}")
     #Modifies the four datasets to have predicted statistics in them
     home_hitting = predict_stats(home_hitting, date)
     home_pitching = predict_stats(home_pitching, date)
@@ -294,6 +294,8 @@ def main():
     if num == '1':
         date = find_date()
         schedule = statsapi.schedule(date=date.date())
+        
+        #print(f"schdule on {date}----{schedule}")
         prediction(date=date, schedule=schedule)
         
         next = input('Press any key to go back to menu, or hit q to quit: ')
