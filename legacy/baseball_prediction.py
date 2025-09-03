@@ -59,7 +59,7 @@ mlb_teams = {
 
 # Load and preprocess data
 data = pd.read_csv('stats.csv')
-data = data[data['Date'].str.contains('2025', na=False)]
+#data = data[data['Date'].str.contains('2025', na=False)]
 data = data.reset_index().drop(['index'], axis=1)
 data = data.loc[:, ~data.columns.str.contains('^Unnamed')]
 data['Date'] = pd.to_datetime(data['Date'], format='%Y-%m-%d')
@@ -178,7 +178,7 @@ def dataset_maker(home, away, date, stats):
     #Generates four datasets with their exponential moving averages included
     home_hitting, home_pitching = calculate_moving_averages(stats, home)
     away_hitting, away_pitching = calculate_moving_averages(stats, away)
-    print(f"Datasets generated{home_hitting, home_pitching}")
+    #print(f"Datasets generated{home_hitting, home_pitching}")
     #Modifies the four datasets to have predicted statistics in them
     home_hitting = predict_stats(home_hitting, date)
     home_pitching = predict_stats(home_pitching, date)

@@ -114,13 +114,11 @@ def stats_per_year(year, years_completed):
     opening_day = datetime.strptime(pd.DataFrame(schedule)['game_date'][0], '%Y-%m-%d').date()
     dates = list(set(pd.DataFrame(schedule)['game_date']))
     dates.sort()
-    print(f"dates: {dates}")
     for date in dates:
         #Resets stats dictionary before every iteration
         date = datetime.strptime(date, '%Y-%m-%d').date()
 
         #Used in debugging, can check which day causes function to crash
-        print(date)
 
         #Ensures the date is far enough past opening day to have enough statistics, and exludes statistics from today
         if date >= opening_day and date < datetime.today().date() and str(date) not in list(pd.read_csv('stats.csv')['Date']):
@@ -180,11 +178,8 @@ def stats_per_year(year, years_completed):
             hitURL = f'https://www.fangraphs.com/leaders/major-league?startdate={opening_day}&enddate={date}&ind=0&qual=0&pageitems=2000000000&season1=&season=&type=8&pos=all&stats=bat&team=0,ts&month=1000'
             hit_page = requests.get(hitURL)
             hit_soup = BeautifulSoup(hit_page.content, "html.parser")
-            print(f"hit_soup: {hit_soup}")
             hit_table = hit_soup.find('div', class_='table-scroll')
-            print(f"hit_table: {hit_table}")
-            hit_rows = hit_table.find('tbody').find_all('tr')
-            print(f"hit_rows: {hit_rows}")
+            hit_rows = hit_table.find('tbody').find_all('tr')            
             #Pitching statistics for each team from opening day to date
             pitchURL = f'https://www.fangraphs.com/leaders/major-league?startdate={opening_day}&enddate={date}&ind=0&qual=0&pageitems=2000000000&season1=&season=&type=8&pos=all&stats=pit&team=0,ts&month=1000'
             pitch_page = requests.get(pitchURL)
@@ -192,6 +187,7 @@ def stats_per_year(year, years_completed):
             pitch_table = pitch_soup.find('div', class_='table-scroll')
             pitch_rows = pitch_table.find('tbody').find_all('tr')
 
+            print(f'Number of games on {date}: {len(daily_schedule)}')
             for game in daily_schedule:
                 #Pitching List Structure:
                 #[index, team, tg, w, l, sv, g, gs, ip, k/9, bb/9, hr/9, babip, lob%, era, fip, war]
@@ -200,6 +196,7 @@ def stats_per_year(year, years_completed):
                 #Hitting List Structure:
                 #[index, team, tg, g, pa, hr, r, rbi, sb, bb%, k%, iso, babip, avg, obp, slg, woba, wrc+, bsr, off, def, war]
                 #['27', 'HOU', '14', '163', '531', '19', '77', '73', '8', '10.9%', '18.5%', '.183', '.257', '.236', '.331', '.419', '.330', '87', '-1.6', '-11.6', '0.0', '0.6']
+                print(f"Processing game: {game['away_name']} at {game['home_name']}")
                 if game['home_name'] in mlb_teams and game['away_name'] in mlb_teams and game['home_score'] != game['away_score']:
                     
                     #Initializes necessary variables
@@ -548,7 +545,7 @@ def all_stats():
         years_completed = [2000, 2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013]
 
     #Iterates through each year from 2000 to 2024
-    for year in range(2006, 2026):
+    for year in range(2022, 2025):
         if year in years_completed:
             continue
         print(f'Starting stats for {year}...')
