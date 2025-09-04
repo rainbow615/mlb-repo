@@ -47,7 +47,7 @@ coverage/
 *.sqlite
 *.sqlite3
 *.db
-
+*.csv
 # Temporary files
 tmp/
 temp/
