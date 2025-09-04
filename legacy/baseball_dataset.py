@@ -114,6 +114,10 @@ def stats_per_year(year, years_completed):
     opening_day = datetime.strptime(pd.DataFrame(schedule)['game_date'][0], '%Y-%m-%d').date()
     dates = list(set(pd.DataFrame(schedule)['game_date']))
     dates.sort()
+
+    print("reading csv")
+    csv_data = pd.read_csv('stats.csv')
+    print("read csv")
     for date in dates:
         #Resets stats dictionary before every iteration
         date = datetime.strptime(date, '%Y-%m-%d').date()
@@ -121,7 +125,7 @@ def stats_per_year(year, years_completed):
         #Used in debugging, can check which day causes function to crash
 
         #Ensures the date is far enough past opening day to have enough statistics, and exludes statistics from today
-        if date >= opening_day and date < datetime.today().date() and str(date) not in list(pd.read_csv('stats.csv')['Date']):
+        if date >= opening_day and date < datetime.today().date() and str(date) not in list(csv_data['Date']):
 
             stats = {
                 'Date': [],
@@ -463,11 +467,8 @@ def stats_per_year(year, years_completed):
             #Updates existing statistics CSV file with new statistics
             print(f"Updating stats for {date}...")
             new_stats = pd.DataFrame(stats)
-            print(f"New stats for {date}:\n{new_stats}")
-            existing_stats = pd.read_csv('stats.csv')
-            print(f"Existing stats before update:\n{existing_stats}")
-            updated_stats = pd.concat([existing_stats, new_stats], ignore_index=True)
-            updated_stats.to_csv('stats.csv', index=False)
+            csv_data = pd.concat([csv_data, new_stats], ignore_index=True)
+            csv_data.to_csv('stats.csv', index=False)
             print(f"Stats for {date} updated successfully.")
 
         elif str(date) in list(pd.read_csv('stats.csv')['Date']):
