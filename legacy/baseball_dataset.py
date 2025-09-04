@@ -120,418 +120,422 @@ def stats_per_year(year, years_completed):
     print("read csv")
     for date in dates:
         #Resets stats dictionary before every iteration
-        date = datetime.strptime(date, '%Y-%m-%d').date()
+        try:
+            date = datetime.strptime(date, '%Y-%m-%d').date()
 
-        #Used in debugging, can check which day causes function to crash
+            #Used in debugging, can check which day causes function to crash
 
-        #Ensures the date is far enough past opening day to have enough statistics, and exludes statistics from today
-        if date >= opening_day and date < datetime.today().date() and str(date) not in list(csv_data['Date']):
+            #Ensures the date is far enough past opening day to have enough statistics, and exludes statistics from today
+            if date >= opening_day and date < datetime.today().date() and str(date) not in list(csv_data['Date']):
 
-            stats = {
-                'Date': [],
-                'Offensive Team': [],
-                'Defensive Team': [],
-                'Total Games': [],
-                'Total Runs': [],
-                'RBIs': [],
-                'AVG': [],
-                'OBP': [],
-                'SLG': [],
-                'wOBA': [],
-                'WRC+': [],
-                'WAR': [],
-                'K Percentage': [],
-                'BB Percentage': [],
-                'BSR': [],
-                'Opposing K/9': [],
-                'Opposing HR/9': [],
-                'Opposing BB/9': [],
-                'ERA': [],
-                'FIP': [],
-                'Opposing War': [],
-                'AVG/5 Players': [],
-                'OBP/5 Players': [],
-                'SLG/5 Players': [],
-                'WAR/5 Players': [],
-                'WRC+/5 Players': [],
-                'K Percentage/5 Players': [],
-                'BB Percentage/5 Players': [],
-                'Opposing K/9/5 Players': [],
-                'Opposing BB/9/5 Players': [],
-                'ERA/5 Players': [],
-                'Opposing WAR/5 Players': [],
-                'AVG/Week': [],
-                'OBP/Week': [],
-                'SLG/Week': [],
-                'WAR/Week': [],
-                'WRC+/Week': [],
-                'K Percentage/Week': [],
-                'BB Percentage/Week': [],
-                'Opposing K/9/Week': [],
-                'Opposing BB/9/Week': [],
-                'ERA/Week': [],
-                'Opposing WAR/Week': [],
-                'Runs Scored': [],
-                'Win?': [],
-            }
-            print(f"----- Starting stats for {date} -----")
-            #Initializes the daily schedule of games
-            daily_schedule = [game for game in statsapi.schedule(date=date) if game['game_type'] == 'R']
+                stats = {
+                    'Date': [],
+                    'Offensive Team': [],
+                    'Defensive Team': [],
+                    'Total Games': [],
+                    'Total Runs': [],
+                    'RBIs': [],
+                    'AVG': [],
+                    'OBP': [],
+                    'SLG': [],
+                    'wOBA': [],
+                    'WRC+': [],
+                    'WAR': [],
+                    'K Percentage': [],
+                    'BB Percentage': [],
+                    'BSR': [],
+                    'Opposing K/9': [],
+                    'Opposing HR/9': [],
+                    'Opposing BB/9': [],
+                    'ERA': [],
+                    'FIP': [],
+                    'Opposing War': [],
+                    'AVG/5 Players': [],
+                    'OBP/5 Players': [],
+                    'SLG/5 Players': [],
+                    'WAR/5 Players': [],
+                    'WRC+/5 Players': [],
+                    'K Percentage/5 Players': [],
+                    'BB Percentage/5 Players': [],
+                    'Opposing K/9/5 Players': [],
+                    'Opposing BB/9/5 Players': [],
+                    'ERA/5 Players': [],
+                    'Opposing WAR/5 Players': [],
+                    'AVG/Week': [],
+                    'OBP/Week': [],
+                    'SLG/Week': [],
+                    'WAR/Week': [],
+                    'WRC+/Week': [],
+                    'K Percentage/Week': [],
+                    'BB Percentage/Week': [],
+                    'Opposing K/9/Week': [],
+                    'Opposing BB/9/Week': [],
+                    'ERA/Week': [],
+                    'Opposing WAR/Week': [],
+                    'Runs Scored': [],
+                    'Win?': [],
+                }
+                print(f"----- Starting stats for {date} -----")
+                #Initializes the daily schedule of games
+                daily_schedule = [game for game in statsapi.schedule(date=date) if game['game_type'] == 'R']
 
-            #Hitting statistics for each team from opening day to date
-            hitURL = f'https://www.fangraphs.com/leaders/major-league?startdate={opening_day}&enddate={date}&ind=0&qual=0&pageitems=2000000000&season1=&season=&type=8&pos=all&stats=bat&team=0,ts&month=1000'
-            hit_page = requests.get(hitURL)
-            hit_soup = BeautifulSoup(hit_page.content, "html.parser")
-            hit_table = hit_soup.find('div', class_='table-scroll')
-            hit_rows = hit_table.find('tbody').find_all('tr')            
-            #Pitching statistics for each team from opening day to date
-            pitchURL = f'https://www.fangraphs.com/leaders/major-league?startdate={opening_day}&enddate={date}&ind=0&qual=0&pageitems=2000000000&season1=&season=&type=8&pos=all&stats=pit&team=0,ts&month=1000'
-            pitch_page = requests.get(pitchURL)
-            pitch_soup = BeautifulSoup(pitch_page.content, "html.parser")
-            pitch_table = pitch_soup.find('div', class_='table-scroll')
-            pitch_rows = pitch_table.find('tbody').find_all('tr')
+                #Hitting statistics for each team from opening day to date
+                hitURL = f'https://www.fangraphs.com/leaders/major-league?startdate={opening_day}&enddate={date}&ind=0&qual=0&pageitems=2000000000&season1=&season=&type=8&pos=all&stats=bat&team=0,ts&month=1000'
+                hit_page = requests.get(hitURL)
+                hit_soup = BeautifulSoup(hit_page.content, "html.parser")
+                hit_table = hit_soup.find('div', class_='table-scroll')
+                hit_rows = hit_table.find('tbody').find_all('tr')            
+                #Pitching statistics for each team from opening day to date
+                pitchURL = f'https://www.fangraphs.com/leaders/major-league?startdate={opening_day}&enddate={date}&ind=0&qual=0&pageitems=2000000000&season1=&season=&type=8&pos=all&stats=pit&team=0,ts&month=1000'
+                pitch_page = requests.get(pitchURL)
+                pitch_soup = BeautifulSoup(pitch_page.content, "html.parser")
+                pitch_table = pitch_soup.find('div', class_='table-scroll')
+                pitch_rows = pitch_table.find('tbody').find_all('tr')
 
-            print(f'Number of games on {date}: {len(daily_schedule)}')
-            for game in daily_schedule:
-                #Pitching List Structure:
-                #[index, team, tg, w, l, sv, g, gs, ip, k/9, bb/9, hr/9, babip, lob%, era, fip, war]
-                #['26', 'HOU', '14', '6', '8', '3', '50', '14', '122.0', '6.86', '3.47', '1.77', '.315', '71.7%', '5.61', '5.47', '0.3']
+                print(f'Number of games on {date}: {len(daily_schedule)}')
+                for game in daily_schedule:
+                    #Pitching List Structure:
+                    #[index, team, tg, w, l, sv, g, gs, ip, k/9, bb/9, hr/9, babip, lob%, era, fip, war]
+                    #['26', 'HOU', '14', '6', '8', '3', '50', '14', '122.0', '6.86', '3.47', '1.77', '.315', '71.7%', '5.61', '5.47', '0.3']
 
-                #Hitting List Structure:
-                #[index, team, tg, g, pa, hr, r, rbi, sb, bb%, k%, iso, babip, avg, obp, slg, woba, wrc+, bsr, off, def, war]
-                #['27', 'HOU', '14', '163', '531', '19', '77', '73', '8', '10.9%', '18.5%', '.183', '.257', '.236', '.331', '.419', '.330', '87', '-1.6', '-11.6', '0.0', '0.6']
-                print(f"Processing game: {game['away_name']} at {game['home_name']}")
-                if game['home_name'] in mlb_teams and game['away_name'] in mlb_teams and game['home_score'] != game['away_score']:
-                    
-                    #Initializes necessary variables
-                    home_team, home_runs, home_num = mlb_teams[game['home_name']]['abbr'], game['home_score'], mlb_teams[game['home_name']]['team_num']
-                    away_team, away_runs, away_num = mlb_teams[game['away_name']]['abbr'], game['away_score'],  mlb_teams[game['away_name']]['team_num']
+                    #Hitting List Structure:
+                    #[index, team, tg, g, pa, hr, r, rbi, sb, bb%, k%, iso, babip, avg, obp, slg, woba, wrc+, bsr, off, def, war]
+                    #['27', 'HOU', '14', '163', '531', '19', '77', '73', '8', '10.9%', '18.5%', '.183', '.257', '.236', '.331', '.419', '.330', '87', '-1.6', '-11.6', '0.0', '0.6']
+                    print(f"Processing game: {game['away_name']} at {game['home_name']}")
+                    if game['home_name'] in mlb_teams and game['away_name'] in mlb_teams and game['home_score'] != game['away_score']:
+                        
+                        #Initializes necessary variables
+                        home_team, home_runs, home_num = mlb_teams[game['home_name']]['abbr'], game['home_score'], mlb_teams[game['home_name']]['team_num']
+                        away_team, away_runs, away_num = mlb_teams[game['away_name']]['abbr'], game['away_score'],  mlb_teams[game['away_name']]['team_num']
 
-                    #Locates hitting statistics for each team
-                    for row in hit_rows:
-                        team_cell = row.find('td', {'data-stat': 'Team'})
-                        if team_cell and team_cell.text.strip() == home_team:
-                            home_hit = [cell.text.strip() for cell in row.find_all('td')]
+                        #Locates hitting statistics for each team
+                        for row in hit_rows:
+                            team_cell = row.find('td', {'data-stat': 'Team'})
+                            if team_cell and team_cell.text.strip() == home_team:
+                                home_hit = [cell.text.strip() for cell in row.find_all('td')]
 
-                        if team_cell and team_cell.text.strip() == away_team:
-                            away_hit = [cell.text.strip() for cell in row.find_all('td')]
-                    
-                    #Locates pitching statistics for each team
-                    for row in pitch_rows:
-                        team_cell = row.find('td', {'data-stat': 'Team'})
-                        if team_cell and team_cell.text.strip() == home_team:
-                            home_pitch = [cell.text.strip() for cell in row.find_all('td')]
+                            if team_cell and team_cell.text.strip() == away_team:
+                                away_hit = [cell.text.strip() for cell in row.find_all('td')]
+                        
+                        #Locates pitching statistics for each team
+                        for row in pitch_rows:
+                            team_cell = row.find('td', {'data-stat': 'Team'})
+                            if team_cell and team_cell.text.strip() == home_team:
+                                home_pitch = [cell.text.strip() for cell in row.find_all('td')]
 
-                        if team_cell and team_cell.text.strip() == away_team:
-                            away_pitch = [cell.text.strip() for cell in row.find_all('td')]
+                            if team_cell and team_cell.text.strip() == away_team:
+                                away_pitch = [cell.text.strip() for cell in row.find_all('td')]
 
-                    #Add all data to the stats dictionary
-                    stats['Date'].append(date)
-                    stats['Date'].append(date)
-                    stats['Offensive Team'].append(home_team)
-                    stats['Offensive Team'].append(away_team)
-                    stats['Defensive Team'].append(away_team)
-                    stats['Defensive Team'].append(home_team)
-                    stats['Total Games'].append(int(home_hit[2]))
-                    stats['Total Games'].append(int(away_hit[2]))
-                    stats['Total Runs'].append(int(home_hit[6]))
-                    stats['Total Runs'].append(int(away_hit[6]))
-                    stats['RBIs'].append(int(home_hit[7]))
-                    stats['RBIs'].append(int(away_hit[7]))
-                    stats['AVG'].append(float(home_hit[15]))
-                    stats['AVG'].append(float(away_hit[15]))
-                    stats['OBP'].append(float(home_hit[16]))
-                    stats['OBP'].append(float(away_hit[16]))
-                    stats['SLG'].append(float(home_hit[17]))
-                    stats['SLG'].append(float(away_hit[17]))
-                    stats['wOBA'].append(float(home_hit[18]))
-                    stats['wOBA'].append(float(away_hit[18]))
-                    stats['WRC+'].append(float(home_hit[20]))
-                    stats['WRC+'].append(float(away_hit[20]))
-                    stats['WAR'].append(float(home_hit[26]))
-                    stats['WAR'].append(float(away_hit[26]))
-                    stats['K Percentage'].append(float(home_hit[11][:len(home_hit[11])-1])/100)
-                    stats['K Percentage'].append(float(away_hit[11][:len(away_hit[11])-1])/100)
-                    stats['BB Percentage'].append(float(home_hit[10][:len(home_hit[10])-1])/100)
-                    stats['BB Percentage'].append(float(away_hit[10][:len(away_hit[10])-1])/100)
-                    stats['BSR'].append(float(home_hit[22]))
-                    stats['BSR'].append(float(away_hit[22]))
-                    stats['Opposing K/9'].append(float(away_pitch[10]))
-                    stats['Opposing K/9'].append(float(home_pitch[10]))
-                    stats['Opposing BB/9'].append(float(away_pitch[11]))
-                    stats['Opposing BB/9'].append(float(home_pitch[11]))
-                    stats['Opposing HR/9'].append(float(away_pitch[12]))
-                    stats['Opposing HR/9'].append(float(home_pitch[12]))
-                    stats['ERA'].append(float(away_pitch[20]))
-                    stats['ERA'].append(float(home_pitch[20]))
-                    stats['FIP'].append(float(away_pitch[22]))
-                    stats['FIP'].append(float(home_pitch[22]))
-                    stats['Opposing War'].append(float(away_pitch[25]))
-                    stats['Opposing War'].append(float(home_pitch[25]))
-                    stats['Runs Scored'].append(home_runs)
-                    stats['Runs Scored'].append(away_runs)
-                    stats['Win?'].append(home_runs > away_runs)
-                    stats['Win?'].append(home_runs < away_runs)
-                    
-                    #Takes breaks in between iterations to ensure website doesn't get overloaded
-                    #time.sleep(random.uniform(3, 5))
+                        #Add all data to the stats dictionary
+                        stats['Date'].append(date)
+                        stats['Date'].append(date)
+                        stats['Offensive Team'].append(home_team)
+                        stats['Offensive Team'].append(away_team)
+                        stats['Defensive Team'].append(away_team)
+                        stats['Defensive Team'].append(home_team)
+                        stats['Total Games'].append(int(home_hit[2]))
+                        stats['Total Games'].append(int(away_hit[2]))
+                        stats['Total Runs'].append(int(home_hit[6]))
+                        stats['Total Runs'].append(int(away_hit[6]))
+                        stats['RBIs'].append(int(home_hit[7]))
+                        stats['RBIs'].append(int(away_hit[7]))
+                        stats['AVG'].append(float(home_hit[15]))
+                        stats['AVG'].append(float(away_hit[15]))
+                        stats['OBP'].append(float(home_hit[16]))
+                        stats['OBP'].append(float(away_hit[16]))
+                        stats['SLG'].append(float(home_hit[17]))
+                        stats['SLG'].append(float(away_hit[17]))
+                        stats['wOBA'].append(float(home_hit[18]))
+                        stats['wOBA'].append(float(away_hit[18]))
+                        stats['WRC+'].append(float(home_hit[20]))
+                        stats['WRC+'].append(float(away_hit[20]))
+                        stats['WAR'].append(float(home_hit[26]))
+                        stats['WAR'].append(float(away_hit[26]))
+                        stats['K Percentage'].append(float(home_hit[11][:len(home_hit[11])-1])/100)
+                        stats['K Percentage'].append(float(away_hit[11][:len(away_hit[11])-1])/100)
+                        stats['BB Percentage'].append(float(home_hit[10][:len(home_hit[10])-1])/100)
+                        stats['BB Percentage'].append(float(away_hit[10][:len(away_hit[10])-1])/100)
+                        stats['BSR'].append(float(home_hit[22]))
+                        stats['BSR'].append(float(away_hit[22]))
+                        stats['Opposing K/9'].append(float(away_pitch[10]))
+                        stats['Opposing K/9'].append(float(home_pitch[10]))
+                        stats['Opposing BB/9'].append(float(away_pitch[11]))
+                        stats['Opposing BB/9'].append(float(home_pitch[11]))
+                        stats['Opposing HR/9'].append(float(away_pitch[12]))
+                        stats['Opposing HR/9'].append(float(home_pitch[12]))
+                        stats['ERA'].append(float(away_pitch[20]))
+                        stats['ERA'].append(float(home_pitch[20]))
+                        stats['FIP'].append(float(away_pitch[22]))
+                        stats['FIP'].append(float(home_pitch[22]))
+                        stats['Opposing War'].append(float(away_pitch[25]))
+                        stats['Opposing War'].append(float(home_pitch[25]))
+                        stats['Runs Scored'].append(home_runs)
+                        stats['Runs Scored'].append(away_runs)
+                        stats['Win?'].append(home_runs > away_runs)
+                        stats['Win?'].append(home_runs < away_runs)
+                        
+                        #Takes breaks in between iterations to ensure website doesn't get overloaded
+                        #time.sleep(random.uniform(3, 5))
 
-                    #Finds the date a week prior to date
-                    game_7 = date - timedelta(days=7)
+                        #Finds the date a week prior to date
+                        game_7 = date - timedelta(days=7)
 
-                    #Hitting statistics for the home team from game_7 to date
-                    hit7 = f'https://www.fangraphs.com/leaders/major-league?startdate={game_7}&enddate={date}&ind=0&qual=0&pageitems=2000000000&type=8&pos=all&stats=bat&team={home_num}&season1=&season=&month=1000&sortcol=3&sortdir=default&pagenum=1'
-                    hit7_page = requests.get(hit7)
-                    hit7_soup = BeautifulSoup(hit7_page.content, "html.parser")
-                    hit7_table = hit7_soup.find('div', class_='table-scroll')
-                    hit7_rows = hit7_table.find('tbody').find_all('tr')
-                    
-                    #Pitching statistics for the away team from game_7 to date
-                    pitch7 = f'https://www.fangraphs.com/leaders/major-league?startdate={game_7}&enddate={date}&ind=0&qual=0&pageitems=2000000000&type=8&pos=all&stats=pit&team={away_num}&season1=&season=&month=1000&sortcol=7&sortdir=default&pagenum=1'
-                    pitch7_page = requests.get(pitch7)
-                    pitch7_soup = BeautifulSoup(pitch7_page.content, "html.parser")
-                    pitch7_table = pitch7_soup.find('div', class_='table-scroll')
-                    pitch7_rows = pitch7_table.find('tbody').find_all('tr')
-                    
-                    #Initialize lists to hold hitting and pitching statistics for key players
-                    hit_stats = []
-                    pitch_stats = []
-                    
-                    #Finds each player that plays for the home team in the hitting statistics
-                    for row in hit7_rows:
-                        team_cell = row.find('td', {'data-stat': 'Team'})
-                        if team_cell and team_cell.text.strip() == home_team:
-                            home_hit = [cell.text.strip() for cell in row.find_all('td')]
-                            hit_stats.append(home_hit)
-                    
-                    #Finds each player that plays for the away team in the pitching statistics
-                    for row in pitch7_rows:
-                        team_cell = row.find('td', {'data-stat': 'Team'})
-                        if team_cell and team_cell.text.strip() == away_team:
-                            away_pitch = [cell.text.strip() for cell in row.find_all('td')]
-                            pitch_stats.append(away_pitch)
+                        #Hitting statistics for the home team from game_7 to date
+                        hit7 = f'https://www.fangraphs.com/leaders/major-league?startdate={game_7}&enddate={date}&ind=0&qual=0&pageitems=2000000000&type=8&pos=all&stats=bat&team={home_num}&season1=&season=&month=1000&sortcol=3&sortdir=default&pagenum=1'
+                        hit7_page = requests.get(hit7)
+                        hit7_soup = BeautifulSoup(hit7_page.content, "html.parser")
+                        hit7_table = hit7_soup.find('div', class_='table-scroll')
+                        hit7_rows = hit7_table.find('tbody').find_all('tr')
+                        
+                        #Pitching statistics for the away team from game_7 to date
+                        pitch7 = f'https://www.fangraphs.com/leaders/major-league?startdate={game_7}&enddate={date}&ind=0&qual=0&pageitems=2000000000&type=8&pos=all&stats=pit&team={away_num}&season1=&season=&month=1000&sortcol=7&sortdir=default&pagenum=1'
+                        pitch7_page = requests.get(pitch7)
+                        pitch7_soup = BeautifulSoup(pitch7_page.content, "html.parser")
+                        pitch7_table = pitch7_soup.find('div', class_='table-scroll')
+                        pitch7_rows = pitch7_table.find('tbody').find_all('tr')
+                        
+                        #Initialize lists to hold hitting and pitching statistics for key players
+                        hit_stats = []
+                        pitch_stats = []
+                        
+                        #Finds each player that plays for the home team in the hitting statistics
+                        for row in hit7_rows:
+                            team_cell = row.find('td', {'data-stat': 'Team'})
+                            if team_cell and team_cell.text.strip() == home_team:
+                                home_hit = [cell.text.strip() for cell in row.find_all('td')]
+                                hit_stats.append(home_hit)
+                        
+                        #Finds each player that plays for the away team in the pitching statistics
+                        for row in pitch7_rows:
+                            team_cell = row.find('td', {'data-stat': 'Team'})
+                            if team_cell and team_cell.text.strip() == away_team:
+                                away_pitch = [cell.text.strip() for cell in row.find_all('td')]
+                                pitch_stats.append(away_pitch)
 
-                    #Shortens the hitting and pitching lists to the top 5 most active players
-                    hit_stats = hit_stats[:5]
-                    pitch_stats = pitch_stats[:5]
+                        #Shortens the hitting and pitching lists to the top 5 most active players
+                        hit_stats = hit_stats[:5]
+                        pitch_stats = pitch_stats[:5]
 
-                    #Calculates averages for the top five players in each category and adds them to the stats dictionary
-                    avg_5 = mean([float(num[15]) for num in hit_stats])
-                    obp_5 = mean([float(num[16]) for num in hit_stats])
-                    slg_5 = mean([float(num[17]) for num in hit_stats])
-                    war_5 = mean([float(num[26]) for num in hit_stats])
-                    wrc_5 = mean([float(num[20]) for num in hit_stats])
-                    k_5 = mean([float(num[11][:len(num[11])-1])/100 for num in hit_stats])
-                    bb_5 = mean([float(num[10][:len(num[10])-1])/100 for num in hit_stats])
-                    ok_5 = mean([float(num[10]) for num in pitch_stats])
-                    obb_5 = mean([float(num[11]) for num in pitch_stats])
-                    era_5 = mean([float(num[20]) for num in pitch_stats])
-                    owar_5 = mean([float(num[25]) for num in pitch_stats])                  
-                    stats['AVG/5 Players'].append(avg_5)
-                    stats['OBP/5 Players'].append(obp_5)
-                    stats['SLG/5 Players'].append(slg_5)
-                    stats['WAR/5 Players'].append(war_5)
-                    stats['WRC+/5 Players'].append(wrc_5)
-                    stats['K Percentage/5 Players'].append(k_5)
-                    stats['BB Percentage/5 Players'].append(bb_5)
-                    stats['Opposing K/9/5 Players'].append(ok_5)
-                    stats['Opposing BB/9/5 Players'].append(obb_5)
-                    stats['ERA/5 Players'].append(era_5)
-                    stats['Opposing WAR/5 Players'].append(owar_5)
+                        #Calculates averages for the top five players in each category and adds them to the stats dictionary
+                        avg_5 = mean([float(num[15]) for num in hit_stats])
+                        obp_5 = mean([float(num[16]) for num in hit_stats])
+                        slg_5 = mean([float(num[17]) for num in hit_stats])
+                        war_5 = mean([float(num[26]) for num in hit_stats])
+                        wrc_5 = mean([float(num[20]) for num in hit_stats])
+                        k_5 = mean([float(num[11][:len(num[11])-1])/100 for num in hit_stats])
+                        bb_5 = mean([float(num[10][:len(num[10])-1])/100 for num in hit_stats])
+                        ok_5 = mean([float(num[10]) for num in pitch_stats])
+                        obb_5 = mean([float(num[11]) for num in pitch_stats])
+                        era_5 = mean([float(num[20]) for num in pitch_stats])
+                        owar_5 = mean([float(num[25]) for num in pitch_stats])                  
+                        stats['AVG/5 Players'].append(avg_5)
+                        stats['OBP/5 Players'].append(obp_5)
+                        stats['SLG/5 Players'].append(slg_5)
+                        stats['WAR/5 Players'].append(war_5)
+                        stats['WRC+/5 Players'].append(wrc_5)
+                        stats['K Percentage/5 Players'].append(k_5)
+                        stats['BB Percentage/5 Players'].append(bb_5)
+                        stats['Opposing K/9/5 Players'].append(ok_5)
+                        stats['Opposing BB/9/5 Players'].append(obb_5)
+                        stats['ERA/5 Players'].append(era_5)
+                        stats['Opposing WAR/5 Players'].append(owar_5)
 
-                    #Takes breaks in between iterations to ensure website doesn't get overloaded
-                    #time.sleep(random.uniform(3, 5))
-                    
-                    #Hitting statistics for the away team from game_7 to date
-                    hit7 = f'https://www.fangraphs.com/leaders/major-league?startdate={game_7}&enddate={date}&ind=0&qual=0&pageitems=2000000000&type=8&pos=all&stats=bat&team={away_num}&season1=&season=&month=1000&sortcol=3&sortdir=default&pagenum=1'
-                    hit7_page = requests.get(hit7)
-                    hit7_soup = BeautifulSoup(hit7_page.content, "html.parser")
-                    hit7_table = hit7_soup.find('div', class_='table-scroll')
-                    hit7_rows = hit7_table.find('tbody').find_all('tr')
-                    
-                    #Pitching statistics for the home team from game_7 to date
-                    pitch7 = f'https://www.fangraphs.com/leaders/major-league?startdate={game_7}&enddate={date}&ind=0&qual=0&pageitems=2000000000&type=8&pos=all&stats=pit&team={home_num}&season1=&season=&month=1000&sortcol=7&sortdir=default&pagenum=1'
-                    pitch7_page = requests.get(pitch7)
-                    pitch7_soup = BeautifulSoup(pitch7_page.content, "html.parser")
-                    pitch7_table = pitch7_soup.find('div', class_='table-scroll')
-                    pitch7_rows = pitch7_table.find('tbody').find_all('tr')
-                    
-                    #Initialize lists to hold hitting and pitching statistics for key players
-                    hit_stats = []
-                    pitch_stats = []
-                    
-                    #Finds each player that plays for the away team in the hitting statistics
-                    for row in hit7_rows:
-                        team_cell = row.find('td', {'data-stat': 'Team'})
-                        if team_cell and team_cell.text.strip() == away_team:
-                            away_hit = [cell.text.strip() for cell in row.find_all('td')]
-                            hit_stats.append(away_hit)
-                    
-                    #Finds each player that plays for the home team in the pitching statistics
-                    for row in pitch7_rows:
-                        team_cell = row.find('td', {'data-stat': 'Team'})
-                        if team_cell and team_cell.text.strip() == home_team:
-                            home_pitch = [cell.text.strip() for cell in row.find_all('td')]
-                            pitch_stats.append(home_pitch)
+                        #Takes breaks in between iterations to ensure website doesn't get overloaded
+                        #time.sleep(random.uniform(3, 5))
+                        
+                        #Hitting statistics for the away team from game_7 to date
+                        hit7 = f'https://www.fangraphs.com/leaders/major-league?startdate={game_7}&enddate={date}&ind=0&qual=0&pageitems=2000000000&type=8&pos=all&stats=bat&team={away_num}&season1=&season=&month=1000&sortcol=3&sortdir=default&pagenum=1'
+                        hit7_page = requests.get(hit7)
+                        hit7_soup = BeautifulSoup(hit7_page.content, "html.parser")
+                        hit7_table = hit7_soup.find('div', class_='table-scroll')
+                        hit7_rows = hit7_table.find('tbody').find_all('tr')
+                        
+                        #Pitching statistics for the home team from game_7 to date
+                        pitch7 = f'https://www.fangraphs.com/leaders/major-league?startdate={game_7}&enddate={date}&ind=0&qual=0&pageitems=2000000000&type=8&pos=all&stats=pit&team={home_num}&season1=&season=&month=1000&sortcol=7&sortdir=default&pagenum=1'
+                        pitch7_page = requests.get(pitch7)
+                        pitch7_soup = BeautifulSoup(pitch7_page.content, "html.parser")
+                        pitch7_table = pitch7_soup.find('div', class_='table-scroll')
+                        pitch7_rows = pitch7_table.find('tbody').find_all('tr')
+                        
+                        #Initialize lists to hold hitting and pitching statistics for key players
+                        hit_stats = []
+                        pitch_stats = []
+                        
+                        #Finds each player that plays for the away team in the hitting statistics
+                        for row in hit7_rows:
+                            team_cell = row.find('td', {'data-stat': 'Team'})
+                            if team_cell and team_cell.text.strip() == away_team:
+                                away_hit = [cell.text.strip() for cell in row.find_all('td')]
+                                hit_stats.append(away_hit)
+                        
+                        #Finds each player that plays for the home team in the pitching statistics
+                        for row in pitch7_rows:
+                            team_cell = row.find('td', {'data-stat': 'Team'})
+                            if team_cell and team_cell.text.strip() == home_team:
+                                home_pitch = [cell.text.strip() for cell in row.find_all('td')]
+                                pitch_stats.append(home_pitch)
 
-                    #Shortens the hitting and pitching lists to the top 5 most active players
-                    hit_stats = hit_stats[:5]
-                    pitch_stats = pitch_stats[:5]
+                        #Shortens the hitting and pitching lists to the top 5 most active players
+                        hit_stats = hit_stats[:5]
+                        pitch_stats = pitch_stats[:5]
 
-                    #Calculates averages for the top five players in each category and adds them to the stats dictionary
-                    avg_5 = mean([float(num[15]) for num in hit_stats])
-                    obp_5 = mean([float(num[16]) for num in hit_stats])
-                    slg_5 = mean([float(num[17]) for num in hit_stats])
-                    war_5 = mean([float(num[26]) for num in hit_stats])
-                    wrc_5 = mean([float(num[20]) for num in hit_stats])
-                    k_5 = mean([float(num[11][:len(num[11])-1])/100 for num in hit_stats])
-                    bb_5 = mean([float(num[10][:len(num[10])-1])/100 for num in hit_stats])
-                    ok_5 = mean([float(num[10]) for num in pitch_stats])
-                    obb_5 = mean([float(num[11]) for num in pitch_stats])
-                    era_5 = mean([float(num[20]) for num in pitch_stats])
-                    owar_5 = mean([float(num[25]) for num in pitch_stats]) 
-                    stats['AVG/5 Players'].append(avg_5)
-                    stats['OBP/5 Players'].append(obp_5)
-                    stats['SLG/5 Players'].append(slg_5)
-                    stats['WAR/5 Players'].append(war_5)
-                    stats['WRC+/5 Players'].append(wrc_5)
-                    stats['K Percentage/5 Players'].append(k_5)
-                    stats['BB Percentage/5 Players'].append(bb_5)
-                    stats['Opposing K/9/5 Players'].append(ok_5)
-                    stats['Opposing BB/9/5 Players'].append(obb_5)
-                    stats['ERA/5 Players'].append(era_5)
-                    stats['Opposing WAR/5 Players'].append(owar_5)
+                        #Calculates averages for the top five players in each category and adds them to the stats dictionary
+                        avg_5 = mean([float(num[15]) for num in hit_stats])
+                        obp_5 = mean([float(num[16]) for num in hit_stats])
+                        slg_5 = mean([float(num[17]) for num in hit_stats])
+                        war_5 = mean([float(num[26]) for num in hit_stats])
+                        wrc_5 = mean([float(num[20]) for num in hit_stats])
+                        k_5 = mean([float(num[11][:len(num[11])-1])/100 for num in hit_stats])
+                        bb_5 = mean([float(num[10][:len(num[10])-1])/100 for num in hit_stats])
+                        ok_5 = mean([float(num[10]) for num in pitch_stats])
+                        obb_5 = mean([float(num[11]) for num in pitch_stats])
+                        era_5 = mean([float(num[20]) for num in pitch_stats])
+                        owar_5 = mean([float(num[25]) for num in pitch_stats]) 
+                        stats['AVG/5 Players'].append(avg_5)
+                        stats['OBP/5 Players'].append(obp_5)
+                        stats['SLG/5 Players'].append(slg_5)
+                        stats['WAR/5 Players'].append(war_5)
+                        stats['WRC+/5 Players'].append(wrc_5)
+                        stats['K Percentage/5 Players'].append(k_5)
+                        stats['BB Percentage/5 Players'].append(bb_5)
+                        stats['Opposing K/9/5 Players'].append(ok_5)
+                        stats['Opposing BB/9/5 Players'].append(obb_5)
+                        stats['ERA/5 Players'].append(era_5)
+                        stats['Opposing WAR/5 Players'].append(owar_5)
 
-                    #Takes breaks in between iterations to ensure website doesn't get overloaded
-                    #time.sleep(random.uniform(3, 5))
-                    
-                    #Hitting statistics for each team from game_7 to date
-                    team_hit = f'https://www.fangraphs.com/leaders/major-league?startdate={game_7}&enddate={date}&ind=0&qual=0&pageitems=2000000000&type=8&pos=all&stats=bat&season1=2000&season=2000&postseason=&month=1000&team=0%2Cts'
-                    team_hit_page = requests.get(team_hit)
-                    team_hit_soup = BeautifulSoup(team_hit_page.content, "html.parser")
-                    team_hit_table = team_hit_soup.find('div', class_='table-scroll')
-                    team_hit_rows = team_hit_table.find('tbody').find_all('tr')
-                    
-                    #Pitching statistics for each team from game_7 to date
-                    team_pitch = f'https://www.fangraphs.com/leaders/major-league?startdate={game_7}&enddate={date}&ind=0&qual=0&pageitems=2000000000&type=8&pos=all&stats=pit&season1=2000&season=2000&postseason=&team=0,ts&month=1000'
-                    team_pitch_page = requests.get(team_pitch)
-                    team_pitch_soup = BeautifulSoup(team_pitch_page.content, "html.parser")
-                    team_pitch_table = team_pitch_soup.find('div', class_='table-scroll')
-                    team_pitch_rows = team_pitch_table.find('tbody').find_all('tr')
-                    
-                    #Locates hitting statistics for each team
-                    for row in team_hit_rows:
-                        team_cell = row.find('td', {'data-stat': 'Team'})
-                        if team_cell and team_cell.text.strip() == home_team:
-                            home_hit = [cell.text.strip() for cell in row.find_all('td')]
+                        #Takes breaks in between iterations to ensure website doesn't get overloaded
+                        #time.sleep(random.uniform(3, 5))
+                        
+                        #Hitting statistics for each team from game_7 to date
+                        team_hit = f'https://www.fangraphs.com/leaders/major-league?startdate={game_7}&enddate={date}&ind=0&qual=0&pageitems=2000000000&type=8&pos=all&stats=bat&season1=2000&season=2000&postseason=&month=1000&team=0%2Cts'
+                        team_hit_page = requests.get(team_hit)
+                        team_hit_soup = BeautifulSoup(team_hit_page.content, "html.parser")
+                        team_hit_table = team_hit_soup.find('div', class_='table-scroll')
+                        team_hit_rows = team_hit_table.find('tbody').find_all('tr')
+                        
+                        #Pitching statistics for each team from game_7 to date
+                        team_pitch = f'https://www.fangraphs.com/leaders/major-league?startdate={game_7}&enddate={date}&ind=0&qual=0&pageitems=2000000000&type=8&pos=all&stats=pit&season1=2000&season=2000&postseason=&team=0,ts&month=1000'
+                        team_pitch_page = requests.get(team_pitch)
+                        team_pitch_soup = BeautifulSoup(team_pitch_page.content, "html.parser")
+                        team_pitch_table = team_pitch_soup.find('div', class_='table-scroll')
+                        team_pitch_rows = team_pitch_table.find('tbody').find_all('tr')
+                        
+                        #Locates hitting statistics for each team
+                        for row in team_hit_rows:
+                            team_cell = row.find('td', {'data-stat': 'Team'})
+                            if team_cell and team_cell.text.strip() == home_team:
+                                home_hit = [cell.text.strip() for cell in row.find_all('td')]
 
-                        if team_cell and team_cell.text.strip() == away_team:
-                            away_hit = [cell.text.strip() for cell in row.find_all('td')]
-                    
-                    #Locates pitching statistics for each team
-                    for row in team_pitch_rows:
-                        team_cell = row.find('td', {'data-stat': 'Team'})
-                        if team_cell and team_cell.text.strip() == home_team:
-                            home_pitch = [cell.text.strip() for cell in row.find_all('td')]
+                            if team_cell and team_cell.text.strip() == away_team:
+                                away_hit = [cell.text.strip() for cell in row.find_all('td')]
+                        
+                        #Locates pitching statistics for each team
+                        for row in team_pitch_rows:
+                            team_cell = row.find('td', {'data-stat': 'Team'})
+                            if team_cell and team_cell.text.strip() == home_team:
+                                home_pitch = [cell.text.strip() for cell in row.find_all('td')]
 
-                        if team_cell and team_cell.text.strip() == away_team:
-                            away_pitch = [cell.text.strip() for cell in row.find_all('td')]
+                            if team_cell and team_cell.text.strip() == away_team:
+                                away_pitch = [cell.text.strip() for cell in row.find_all('td')]
 
-                    #Adds new data to the stats dictionary
-                    stats['AVG/Week'].append(float(home_hit[15]))
-                    stats['OBP/Week'].append(float(home_hit[16]))
-                    stats['SLG/Week'].append(float(home_hit[17]))
-                    stats['WAR/Week'].append(float(home_hit[26]))
-                    stats['WRC+/Week'].append(float(home_hit[20]))
-                    stats['K Percentage/Week'].append(float(home_hit[11][:len(home_hit[11])-1])/100)
-                    stats['BB Percentage/Week'].append(float(home_hit[10][:len(home_hit[10])-1])/100)
-                    stats['Opposing K/9/Week'].append(float(away_pitch[10]))
-                    stats['Opposing BB/9/Week'].append(float(away_pitch[11]))
-                    stats['ERA/Week'].append(float(away_pitch[20]))
-                    stats['Opposing WAR/Week'].append(float(away_pitch[25]))
-                    stats['AVG/Week'].append(float(away_hit[15]))
-                    stats['OBP/Week'].append(float(away_hit[16]))
-                    stats['SLG/Week'].append(float(away_hit[17]))
-                    stats['WAR/Week'].append(float(away_hit[26]))
-                    stats['WRC+/Week'].append(float(away_hit[20]))
-                    stats['K Percentage/Week'].append(float(away_hit[11][:len(away_hit[11])-1])/100)
-                    stats['BB Percentage/Week'].append(float(away_hit[10][:len(away_hit[10])-1])/100)
-                    stats['Opposing K/9/Week'].append(float(home_pitch[10]))
-                    stats['Opposing BB/9/Week'].append(float(home_pitch[11]))
-                    stats['ERA/Week'].append(float(home_pitch[20]))
-                    stats['Opposing WAR/Week'].append(float(home_pitch[25]))
-            
-            #Takes breaks in between iterations to ensure website doesn't get overloaded
-            #time.sleep(random.uniform(3, 5))
-            
-            #Updates existing statistics CSV file with new statistics
-            print(f"Updating stats for {date}...")
-            new_stats = pd.DataFrame(stats)
-            csv_data = pd.concat([csv_data, new_stats], ignore_index=True)
-            csv_data.to_csv('stats.csv', index=False)
-            print(f"Stats for {date} updated successfully.")
+                        #Adds new data to the stats dictionary
+                        stats['AVG/Week'].append(float(home_hit[15]))
+                        stats['OBP/Week'].append(float(home_hit[16]))
+                        stats['SLG/Week'].append(float(home_hit[17]))
+                        stats['WAR/Week'].append(float(home_hit[26]))
+                        stats['WRC+/Week'].append(float(home_hit[20]))
+                        stats['K Percentage/Week'].append(float(home_hit[11][:len(home_hit[11])-1])/100)
+                        stats['BB Percentage/Week'].append(float(home_hit[10][:len(home_hit[10])-1])/100)
+                        stats['Opposing K/9/Week'].append(float(away_pitch[10]))
+                        stats['Opposing BB/9/Week'].append(float(away_pitch[11]))
+                        stats['ERA/Week'].append(float(away_pitch[20]))
+                        stats['Opposing WAR/Week'].append(float(away_pitch[25]))
+                        stats['AVG/Week'].append(float(away_hit[15]))
+                        stats['OBP/Week'].append(float(away_hit[16]))
+                        stats['SLG/Week'].append(float(away_hit[17]))
+                        stats['WAR/Week'].append(float(away_hit[26]))
+                        stats['WRC+/Week'].append(float(away_hit[20]))
+                        stats['K Percentage/Week'].append(float(away_hit[11][:len(away_hit[11])-1])/100)
+                        stats['BB Percentage/Week'].append(float(away_hit[10][:len(away_hit[10])-1])/100)
+                        stats['Opposing K/9/Week'].append(float(home_pitch[10]))
+                        stats['Opposing BB/9/Week'].append(float(home_pitch[11]))
+                        stats['ERA/Week'].append(float(home_pitch[20]))
+                        stats['Opposing WAR/Week'].append(float(home_pitch[25]))
+                
+                #Takes breaks in between iterations to ensure website doesn't get overloaded
+                #time.sleep(random.uniform(3, 5))
+                
+                #Updates existing statistics CSV file with new statistics
+                print(f"Updating stats for {date}...")
+                new_stats = pd.DataFrame(stats)
+                csv_data = pd.concat([csv_data, new_stats], ignore_index=True)
+                csv_data.to_csv('stats.csv', index=False)
+                print(f"Stats for {date} updated successfully.")
 
-        elif str(date) in list(pd.read_csv('stats.csv')['Date']):
-            df = pd.read_csv('stats.csv')
-            hitURL = f'https://www.fangraphs.com/leaders/major-league?startdate={opening_day}&enddate={date}&ind=0&qual=0&pageitems=2000000000&season1=&season=&type=8&pos=all&stats=bat&team=0,ts&month=1000'
-            hit_page = requests.get(hitURL)
-            hit_soup = BeautifulSoup(hit_page.content, "html.parser")
-            hit_table = hit_soup.find('div', class_='table-scroll')
-            hit_rows = hit_table.find('tbody').find_all('tr')
+            elif str(date) in list(csv_data['Date']):
+                continue
+                hitURL = f'https://www.fangraphs.com/leaders/major-league?startdate={opening_day}&enddate={date}&ind=0&qual=0&pageitems=2000000000&season1=&season=&type=8&pos=all&stats=bat&team=0,ts&month=1000'
+                hit_page = requests.get(hitURL)
+                hit_soup = BeautifulSoup(hit_page.content, "html.parser")
+                hit_table = hit_soup.find('div', class_='table-scroll')
+                hit_rows = hit_table.find('tbody').find_all('tr')
 
-            #Pitching statistics for each team from opening day to date
-            pitchURL = f'https://www.fangraphs.com/leaders/major-league?startdate={opening_day}&enddate={date}&ind=0&qual=0&pageitems=2000000000&season1=&season=&type=8&pos=all&stats=pit&team=0,ts&month=1000'
-            pitch_page = requests.get(pitchURL)
-            pitch_soup = BeautifulSoup(pitch_page.content, "html.parser")
-            pitch_table = pitch_soup.find('div', class_='table-scroll')
-            pitch_rows = pitch_table.find('tbody').find_all('tr')
+                #Pitching statistics for each team from opening day to date
+                pitchURL = f'https://www.fangraphs.com/leaders/major-league?startdate={opening_day}&enddate={date}&ind=0&qual=0&pageitems=2000000000&season1=&season=&type=8&pos=all&stats=pit&team=0,ts&month=1000'
+                pitch_page = requests.get(pitchURL)
+                pitch_soup = BeautifulSoup(pitch_page.content, "html.parser")
+                pitch_table = pitch_soup.find('div', class_='table-scroll')
+                pitch_rows = pitch_table.find('tbody').find_all('tr')
 
-            # Get the daily schedule for this date
-            daily_schedule = [game for game in statsapi.schedule(date=date) if game['game_type'] == 'R']
+                # Get the daily schedule for this date
+                daily_schedule = [game for game in statsapi.schedule(date=date) if game['game_type'] == 'R']
 
-            for game in daily_schedule:
-                if game['home_name'] in mlb_teams and game['away_name'] in mlb_teams:
-                    #Initializes necessary variables
-                    home_team, home_runs, home_num = mlb_teams[game['home_name']]['abbr'], game['home_score'], mlb_teams[game['home_name']]['team_num']
-                    away_team, away_runs, away_num = mlb_teams[game['away_name']]['abbr'], game['away_score'],  mlb_teams[game['away_name']]['team_num']
+                for game in daily_schedule:
+                    if game['home_name'] in mlb_teams and game['away_name'] in mlb_teams:
+                        #Initializes necessary variables
+                        home_team, home_runs, home_num = mlb_teams[game['home_name']]['abbr'], game['home_score'], mlb_teams[game['home_name']]['team_num']
+                        away_team, away_runs, away_num = mlb_teams[game['away_name']]['abbr'], game['away_score'],  mlb_teams[game['away_name']]['team_num']
 
-                    #Locates hitting statistics for each team
-                    for row in hit_rows:
-                        team_cell = row.find('td', {'data-stat': 'Team'})
-                        if team_cell and team_cell.text.strip() == home_team:
-                            home_hit = [cell.text.strip() for cell in row.find_all('td')]
+                        #Locates hitting statistics for each team
+                        for row in hit_rows:
+                            team_cell = row.find('td', {'data-stat': 'Team'})
+                            if team_cell and team_cell.text.strip() == home_team:
+                                home_hit = [cell.text.strip() for cell in row.find_all('td')]
 
-                        if team_cell and team_cell.text.strip() == away_team:
-                            away_hit = [cell.text.strip() for cell in row.find_all('td')]
-                    
-                    #Locates pitching statistics for each team
-                    for row in pitch_rows:
-                        team_cell = row.find('td', {'data-stat': 'Team'})
-                        if team_cell and team_cell.text.strip() == home_team:
-                            home_pitch = [cell.text.strip() for cell in row.find_all('td')]
+                            if team_cell and team_cell.text.strip() == away_team:
+                                away_hit = [cell.text.strip() for cell in row.find_all('td')]
+                        
+                        #Locates pitching statistics for each team
+                        for row in pitch_rows:
+                            team_cell = row.find('td', {'data-stat': 'Team'})
+                            if team_cell and team_cell.text.strip() == home_team:
+                                home_pitch = [cell.text.strip() for cell in row.find_all('td')]
 
-                        if team_cell and team_cell.text.strip() == away_team:
-                            away_pitch = [cell.text.strip() for cell in row.find_all('td')]
+                            if team_cell and team_cell.text.strip() == away_team:
+                                away_pitch = [cell.text.strip() for cell in row.find_all('td')]
 
-                    # --- Insert your scraping logic here to get new_woba_home, new_fip_home, new_woba_away, new_fip_away ---
-                    # Example: (replace with actual scraping)
-                    new_woba_home = float(home_hit[18])  # replace with actual value
-                    new_fip_home = float(home_pitch[22])   # replace with actual value
-                    new_woba_away = float(away_hit[18])  # replace with actual value
-                    new_fip_away = float(away_pitch[22])   # replace with actual value
+                        # --- Insert your scraping logic here to get new_woba_home, new_fip_home, new_woba_away, new_fip_away ---
+                        # Example: (replace with actual scraping)
+                        new_woba_home = float(home_hit[18])  # replace with actual value
+                        new_fip_home = float(home_pitch[22])   # replace with actual value
+                        new_woba_away = float(away_hit[18])  # replace with actual value
+                        new_fip_away = float(away_pitch[22])   # replace with actual value
 
-                    # Update home team row
-                    mask_home = (df['Date'] == str(date)) & (df['Offensive Team'] == home_team) & (df['Defensive Team'] == away_team)
-                    df.loc[mask_home, 'wOBA'] = new_woba_home
-                    df.loc[mask_home, 'FIP'] = new_fip_away  # FIP is for the opposing pitcher
+                        # Update home team row
+                        mask_home = (csv_data['Date'] == str(date)) & (csv_data['Offensive Team'] == home_team) & (csv_data['Defensive Team'] == away_team)
+                        csv_data.loc[mask_home, 'wOBA'] = new_woba_home
+                        csv_data.loc[mask_home, 'FIP'] = new_fip_away  # FIP is for the opposing pitcher
 
-                    # Update away team row
-                    mask_away = (df['Date'] == str(date)) & (df['Offensive Team'] == away_team) & (df['Defensive Team'] == home_team)
-                    df.loc[mask_away, 'wOBA'] = new_woba_away
-                    df.loc[mask_away, 'FIP'] = new_fip_home  # FIP is for the opposing pitcher
+                        # Update away team row
+                        mask_away = (csv_data['Date'] == str(date)) & (csv_data['Offensive Team'] == away_team) & (csv_data['Defensive Team'] == home_team)
+                        csv_data.loc[mask_away, 'wOBA'] = new_woba_away
+                        csv_data.loc[mask_away, 'FIP'] = new_fip_home  # FIP is for the opposing pitcher
 
-            # Save the updated DataFrame
-            df.to_csv('stats.csv', index=False)
+                # Save the updated DataFrame
+                csv_data.to_csv('stats.csv', index=False)
+        except Exception as e:
+            print(f"Error processing date {date}: {e}")
+            continue
 
 def all_stats():
     '''
