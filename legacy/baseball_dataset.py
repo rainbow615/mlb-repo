@@ -461,10 +461,14 @@ def stats_per_year(year, years_completed):
             #time.sleep(random.uniform(3, 5))
             
             #Updates existing statistics CSV file with new statistics
+            print(f"Updating stats for {date}...")
             new_stats = pd.DataFrame(stats)
+            print(f"New stats for {date}:\n{new_stats}")
             existing_stats = pd.read_csv('stats.csv')
+            print(f"Existing stats before update:\n{existing_stats}")
             updated_stats = pd.concat([existing_stats, new_stats], ignore_index=True)
             updated_stats.to_csv('stats.csv', index=False)
+            print(f"Stats for {date} updated successfully.")
 
         elif str(date) in list(pd.read_csv('stats.csv')['Date']):
             df = pd.read_csv('stats.csv')
